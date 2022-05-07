@@ -1,99 +1,78 @@
 participant = ["mislav", "stanko", "mislav", "ana"]
 completion = ["stanko", "ana", "mislav"]
 answer = ''
-# temp = 0
-# dic = {}
-# for part in participant:
-#     dic[hash(part)] = part
-#     temp += int(hash(part))
-# for com in completion:
-#     temp -= hash(com)
-# answer = dic[temp]
 
-# participant의 해시값을 key로 하여 딕셔너리에 key(해시값):value(참가자)의 형태로 저장한다.
-# participant를 순회하며 해시의 값을 temp에 더해준다. 그리고 completion을 돌며 해시의 값을 temp에서 빼주면
-# completion에 없는 participant 의 해시값많이 temp에 남는다. 그리고 그 해시값을 키값으로 딕셔너리에서 값을 서치하면
-# 완주하지 못한 participant의 이름이 나온다.
+# 딕셔너리를 이용한 풀이법1
+"""
+def solution(participant, completion):
+    answer = ''
+    p = {participant[x] : 0 for x in range(len(participant))}   # {참가자이름:수} 형식으로 딕셔너리p 생성
+    for i in participant:
+        p[i] += 1
 
-# h = {}
-# temp = 0
-# for p in participant:
-#     h[hash(p)] = p
-#     temp += hash(p)
-# for c in completion:
-#     temp -= hash(c)
-# print(h[temp])
+    for i in completion:        # completion을 key로 p의 value 감소
+        p[i] -= 1
 
+    for i, j in p.items():      # value가 남아있을 경우 key를 출력
+        if j == 1:
+            answer = i
+            break
+            
+    return answer
+    
+print(solution(participant, completion))
+    """
 
-# dict = {}
-# for p in participant:
-#     dict[p] = dict.get(p, 0) + 1
-# # 딕셔너리 안에 찾으려는 키값이 없을때 정해둔 디폴트 값을 가져오게하는것.
-# for i in completion:
-#     dict[i] -= 1
-#
-# for k in dict:
-#     if dict[k]:
-#         print(k)
-
-
-import collections
-answer = collections.Counter(participant) - collections.Counter(completion)
-print(list(answer.keys())[0])
+#해시 함수를 이용한 풀이법
+"""def solution(participant, completion):
+    h = {}
+    temp = 0
+    for p in participant:   # participant의 해시값을 key로 하여 딕셔너리에 key(해시값):value(참가자)의 형태로 저장한다.
+        h[hash(p)] = p
+        temp += hash(p)     # participant를 순회하며 해시의 값을 temp에 더해준다.
+    for c in completion:
+        temp -= hash(c)     # completion을 돌며 해시의 값을 temp에서 빼주면 completion에 없는 participant 의 해시값만이 temp에 남는다. 
+    return(h[temp])         # 그 해시값을 키값으로 딕셔너리에서 값을 서치하면 완주하지 못한 participant의 이름이 나온다.
+print(solution(participant, completion))"""
 
 
+# 딕셔너리를 이용한 풀이법2
+"""def solution(participant, completion):
+    dict = {}
+    for p in participant:
+        dict[p] = dict.get(p, 0) + 1    # p의 디폴트 값을 0으로 초기화한 후 1을 더해 사람의 숫자를 표현
+
+    for i in completion:
+        dict[i] -= 1
+
+    for k in dict:
+        if dict[k]:
+            return k
+print(solution(participant, completion))
+"""
+
+# zip을 이용한 풀이법
+"""def solution(participant, completion):
+    answer = ''
+    participant.sort()                          #participant와 completion을 정렬
+    completion.sort()
+    for i,j in zip(participant, completion):    # zip을 통해 participant, completion의 각원소를 비교
+        if i != j:                              
+            return i
+    return participant[-1]
+print(solution(participant, completion))"""
 
 
-# n = len(participant) * 2
-# hash_table = list([0 for i in range(n)])
-#
-#
-# def get_key(data):
-#     return hash(data)
-#
-#
-# def hash_function(key):
-#     return key % n
-#
-#
-# def save_data(data, value):
-#     index_key = get_key(data)
-#     hash_address = hash_function(index_key)
-#     if hash_table[hash_address] != 0:
-#         for index in range(len(hash_table[hash_address])):
-#             if hash_table[hash_address][index][0] == index_key:
-#                 if hash_table[hash_address][index][1] == 0 :
-#                     hash_table[hash_address][index][1] = value
-#                 else:
-#                     hash_table[hash_address].append([index_key, value])
-#                 return
-#         hash_table[hash_address].append([index_key, value])
-#     else:
-#         hash_table[hash_address] = [[index_key, value]]
-#
-#
-# def read_data(data):
-#     index_key = get_key(data)
-#     hash_address = hash_function(index_key)
-#
-#     if hash_table[hash_address] != 0:
-#         for index in range(len(hash_table[hash_address])):
-#             if hash_table[hash_address][index][0] == index_key:
-#                 hash_table[hash_address][index] = 0
-#                 return
-#         return None
-#     else:
-#         return None
-#
-#
-# for p in participant:
-#     save_data('mislav', p)
-#
-# print(hash_table)
-#
-#
-# for c in completion:
-#     read_data(c)
-#
-# print(hash_table)
+# Collections 모듈을 사용한 풀이법
+# collections.Counter는 class, dict내 아이템의 발생빈도를 카운트하여 저장한다.
+# Counter({'mislav': 2, 'stanko': 1, 'ana': 1}) 와 같은 형태의 결과값이 나온다.
+
+"""import collections
+def solution(participant, completion):
+    answer = collections.Counter(participant) - collections.Counter(completion)
+    return(list(answer.keys())[0])
+
+print(solution(participant, completion))
+"""
+
 
